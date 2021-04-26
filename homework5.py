@@ -45,7 +45,7 @@ def receiveOnePing(mySocket, ID, timeout, destAddr):
               
         #Fill in start
         #Fetch the ICMP header from the IP packet
-        header = recPacket[20: 28]
+        type, code, checksum, id, sequence = struct.unpack("bbHHh", recPacket[20:28])       
         #Fill in end
 
         timeLeft = timeLeft - howLongInSelect 
@@ -82,7 +82,9 @@ def doOnePing(destAddr, timeout):
     # SOCK_RAW is a powerful socket type. For more details: http://sock- raw.org/papers/sock_raw
 
     mySocket = socket(AF_INET, SOCK_RAW, icmp)
-    myID = os.getpid() & 0xFFFF # Return the current process i sendOnePing(mySocket, destAddr, myID)
+    
+    myID = os.getpid() & 0xFFFF # Return the current process i 
+    sendOnePing(mySocket, destAddr, myID)
     delay = receiveOnePing(mySocket, myID, timeout, destAddr)
 
     mySocket.close() 
@@ -101,4 +103,4 @@ def ping(host, timeout=1):
         time.sleep(1)# one second
     return delay
 
-ping("www.google.com")
+ping("127.0.0.1")
